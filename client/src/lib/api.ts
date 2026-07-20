@@ -1,6 +1,10 @@
 // Central API client — one place for base URL, auth header, and error handling.
-
-const BASE_URL = import.meta.env.VITE_API_URL || "";
+//
+// We always call the API with a relative path ("/api/...").
+// - Local dev: Vite proxies /api -> http://localhost:4000 (see vite.config.ts).
+// - Production: Vercel rewrites /api -> the Render backend (see client/vercel.json).
+// This keeps the browser same-origin, so no CORS handling is needed on the client.
+const BASE_URL = "";
 
 export const CATEGORIES = [
   "PRODUCT",
