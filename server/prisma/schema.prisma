@@ -1,0 +1,39 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")  // pooled connection (runtime)
+  directUrl = env("DIRECT_URL")    // direct connection (migrations)
+}
+
+enum Category {
+  PRODUCT
+  BUG
+  FEATURE_REQUEST
+  UI_UX
+  SUPPORT
+  BILLING
+  OTHER
+}
+
+model Feedback {
+  id        String   @id @default(cuid())
+  category  Category
+  comment   String
+  rating    Int?
+  email     String?
+  createdAt DateTime @default(now())
+
+  @@index([category])
+  @@index([createdAt])
+}
+
+model AdminUser {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+}
