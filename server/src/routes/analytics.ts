@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { prisma } from "../lib/prisma";
 import { requireAuth } from "../middleware/auth";
+import { bucketByDay } from "../lib/trend";
 
 const router = Router();
 
@@ -27,18 +28,10 @@ router.get("/", requireAuth, async (_req, res, next) => {
       }),
     ]);
 
-    // Bucket last-7-days submissions by day for the trend chart.
-    const trend: { date: string; count: number }[] = [];
-    for (let i = 6; i >= 0; i--) {
-      const day = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
-      const key = day.toISOString().slice(0, 10);
-      trend.push({
-        date: key,
-        count: last7Days.filter(
-          (f) => f.createdAt.toISOString().slice(0, 10) === key
-        ).length,
-      });
-    }
+    const trend = bucketByDay(
+      last7Days.map((f) => f.createdAt),
+      7
+    );
 
     res.json({
       total,

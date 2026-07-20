@@ -1,0 +1,67 @@
+name: CI
+
+# Runs on every push and every pull request targeting main.
+# This is the "safety net" — it catches broken code before it merges.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  server:
+    name: Server — typecheck & tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+
+    steps:
+      # Pulls the repo's code onto the runner's virtual machine.
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Installs the requested Node version and enables npm caching
+      # keyed on package-lock.json, so repeat runs install much faster.
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Type-check
+        run: npx tsc --noEmit
+
+      - name: Run unit tests
+        run: npm test
+
+  client:
+    name: Client — typecheck & build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type-check & build
+        run: npm run build
