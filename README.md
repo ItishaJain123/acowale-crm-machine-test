@@ -129,5 +129,14 @@ Defaults: `admin@acowale.com` / `Acowale@2026` (change these).
 ---
 
 ## 🧭 Notes
-A short journey log and the answers to the assignment's engineering questions live in
-[`DECISIONS.md`](./DECISIONS.md).
+The answers to the assignment's engineering questions live in [`DECISIONS.md`](./DECISIONS.md).
+A short write-up on testable code design is in [`TEACH_US.md`](./TEACH_US.md).
+
+## 🧪 Tests & CI
+```bash
+cd server
+npm test          # run once
+npm run test:watch
+```
+Every push/PR to `main` runs [`.github/workflows/ci.yml`](./.github/workflows/ci.yml):
+type-checks + unit tests for the server, type-check + build for the client.
